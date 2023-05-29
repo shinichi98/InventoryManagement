@@ -1,0 +1,5 @@
+package com.project.InventoryManagement.model;
+
+public class Request {
+
+}
