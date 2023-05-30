@@ -1,0 +1,5 @@
+package com.project.InventoryManagement.utils;
+
+public class PasswordUtils {
+
+}
