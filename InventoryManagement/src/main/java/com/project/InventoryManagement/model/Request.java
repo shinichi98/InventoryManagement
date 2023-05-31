@@ -1,17 +1,15 @@
 package com.project.InventoryManagement.model;
 
-
-import lombok.Data;
+import java.time.LocalDate;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
-
-@Data
 @Entity
 @Table(name = "Request")
 public class Request {
-    @Id
+    
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long requestID;
     
@@ -27,4 +25,48 @@ public class Request {
     
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
+    public Request() {}
+    public Request(Long requestID, User user, Equipment equipment, LocalDate requestDate, RequestStatus status) {
+		this.requestID = requestID;
+		this.user = user;
+		this.equipment = equipment;
+		this.requestDate = requestDate;
+		this.status = status;
+	}
+
+	public Long getRequestID() {
+		return requestID;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Equipment getEquipment() {
+		return equipment;
+	}
+
+	public void setEquipment(Equipment equipment) {
+		this.equipment = equipment;
+	}
+
+	public LocalDate getRequestDate() {
+		return requestDate;
+	}
+
+	public void setRequestDate(LocalDate requestDate) {
+		this.requestDate = requestDate;
+	}
+
+	public RequestStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(RequestStatus status) {
+		this.status = status;
+	}
 }

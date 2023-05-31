@@ -1,0 +1,59 @@
+package com.project.InventoryManagement.service;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.springframework.stereotype.Service;
+
+import com.project.InventoryManagement.model.Equipment;
+import com.project.InventoryManagement.repository.EquipmentRepository;
+
+@Service
+public class EquipmentService {
+
+    private final EquipmentRepository equipmentRepository;
+
+    public EquipmentService(EquipmentRepository equipmentRepository) {
+        this.equipmentRepository = equipmentRepository;
+    }
+
+    public Equipment createEquipment(Equipment equipment) {
+        return equipmentRepository.save(equipment);
+    }
+
+    public Equipment updateEquipment(Equipment updatedEquipment) {
+        Equipment existingEquipment = getEquipmentById(updatedEquipment.getEquipmentID());
+        existingEquipment.setName(updatedEquipment.getName());
+        existingEquipment.setCategory(updatedEquipment.getCategory());
+        existingEquipment.setDescription(updatedEquipment.getDescription());
+        existingEquipment.setQuantity(updatedEquipment.getQuantity());
+        return equipmentRepository.save(existingEquipment);
+    }
+
+    public void deleteEquipment(Long equipmentId) {
+        equipmentRepository.deleteById(equipmentId);
+    }
+
+    public Equipment getEquipmentById(Long equipmentId) {
+        return equipmentRepository.findById(equipmentId)
+                .orElseThrow(() -> new NoSuchElementException("Equipment not found"));
+    }
+
+    public List<Equipment> getAllEquipment() {
+        return equipmentRepository.findAll();
+    }
+
+    public Equipment updateEquipmentQuantity(Long equipmentId, int quantity) {
+        Equipment existingEquipment = equipmentRepository.findById(equipmentId)
+                .orElseGet(() -> createNewEquipment(equipmentId, quantity));
+        existingEquipment.setQuantity(quantity);
+        return equipmentRepository.save(existingEquipment);
+    }
+
+    private Equipment createNewEquipment(Long equipmentId, int quantity) {
+        Equipment newEquipment = new Equipment();
+        newEquipment.setEquipmentID(equipmentId);
+        newEquipment.setQuantity(quantity);
+        return newEquipment;
+    }
+}

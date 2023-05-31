@@ -6,4 +6,5 @@ import com.project.InventoryManagement.model.Request;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
     // Define custom query methods if needed
+	
 }
