@@ -1,0 +1,5 @@
+package com.project.InventoryManagement.controller;
+
+public class EquipmentController {
+
+}

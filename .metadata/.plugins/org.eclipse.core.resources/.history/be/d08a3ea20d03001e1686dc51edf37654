@@ -1,0 +1,20 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Change User Details</title>
+</head>
+<body>
+    <h1>Change User Details</h1>
+    
+    <!-- Your change user details form here -->
+    
+    <form action="updateuserdetails" method="POST">
+        <!-- Your form fields for updating user details -->
+        
+        <input type="submit" value="Update User Details">
+    </form>
+    
+    <a href="welcome.jsp">Go Back</a>
+</body>
+</html>

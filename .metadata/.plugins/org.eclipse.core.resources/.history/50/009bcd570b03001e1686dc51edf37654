@@ -1,0 +1,148 @@
+package com.project.InventoryManagement.controller;
+
+import com.project.InventoryManagement.model.User;
+import com.project.InventoryManagement.model.Equipment;
+import com.project.InventoryManagement.service.UserService;
+import com.project.InventoryManagement.service.EquipmentService;
+import com.project.InventoryManagement.service.RequestService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+@Controller
+@RequestMapping("/frontend")
+public class FrontendController {
+
+    private final UserService userService;
+    private final EquipmentService equipmentService;
+    private final RequestService requestService;
+
+    public FrontendController(UserService userService, EquipmentService equipmentService, RequestService requestService) {
+        this.userService = userService;
+        this.equipmentService = equipmentService;
+        this.requestService = requestService;
+    }
+    @GetMapping("/home")
+    public String showHomePage(Model model) {
+//        model.addAttribute("user", new User()); // Create a new User object for the login form
+        return "home";
+    }
+    @GetMapping("/login")
+    public String showloginPage(Model model) {
+//        model.addAttribute("user", new User()); // Create a new User object for the login form
+        return "login";
+    }
+    @PostMapping("/login")
+    public String loginUser(@RequestParam String username, @RequestParam String password, Model model, HttpSession session) {
+        try {
+            User user = userService.loginUser(username, password);
+            session.setAttribute("user", (User) user);
+            System.out.println(user.getClass().getName() + " " + user.getUserID() +" "+user.getUsername());
+            System.out.println(session.getAttribute("user") != null);
+            return "redirect:/frontend/welcome";
+        } catch (NoSuchElementException e) {
+            model.addAttribute("error", "Invalid username or password");
+            return "login";
+        }
+    }
+
+    @GetMapping("/register")
+    public String showRegistrationPage() {
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String register(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) {
+        try {
+            userService.registerUser(user);
+            redirectAttributes.addFlashAttribute("message", "Registration successful. Please log in.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/frontend/login";
+    }
+
+    @GetMapping("/welcome")
+    public String showWelcomePage(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/login";
+        }
+        return "welcome";
+    }
+
+    @GetMapping("/equipment")
+    public String getAllEquipment(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/home";
+        }
+        List<Equipment> allEquipment = equipmentService.getAllEquipment();
+        model.addAttribute("equipmentList", allEquipment);
+        return "equipmentList";
+    }
+
+    @GetMapping("/requestequipment")
+    public String showRequestEquipmentForm(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/home";
+        }
+        return "requestEquipmentForm";
+    }
+
+    @PostMapping("/requestequipment")
+    public String requestEquipment(@RequestParam("equipmentId") String equipmentId, HttpSession session, RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/home";
+        }
+        try {
+            requestService.raiseRequest(user.getUserID(), Long.parseLong(equipmentId));
+            redirectAttributes.addFlashAttribute("message", "Equipment request submitted successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to request equipment: " + e.getMessage());
+        }
+        return "redirect:/frontend/welcome";
+    }
+    @GetMapping("/changepassword")
+    public String showChangePasswordForm(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/home";
+        }
+        return "changePasswordForm";
+    }
+
+    @PostMapping("/changepassword")
+    public String changePassword(@RequestParam String currentPassword, @RequestParam String newPassword, HttpSession session, RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/home";
+        }
+        try {
+            userService.changePassword((long) user.getUserID(), currentPassword, newPassword);
+            redirectAttributes.addFlashAttribute("message", "Password changed successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to change password: " + e.getMessage());
+        }
+        return "redirect:/frontend/welcome";
+    }
+
+    @GetMapping("/equipment/{equipmentId}")
+    public String getEquipmentDetails(@PathVariable("equipmentId") Long equipmentId, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/home";
+        }
+        Equipment equipment = equipmentService.getEquipmentById(equipmentId);
+        model.addAttribute("equipment", equipment);
+        return "equipmentDetails";
+    }
+
+}

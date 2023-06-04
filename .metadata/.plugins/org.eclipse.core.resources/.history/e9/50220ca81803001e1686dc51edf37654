@@ -1,0 +1,20 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Raise Request for Equipment</title>
+</head>
+<body>
+    <h1>Raise Request for Equipment</h1>
+    
+    <!-- Your request equipment form here -->
+    
+    <form action="submitrequest" method="POST">
+        <!-- Your form fields for equipment request -->
+        
+        <input type="submit" value="Submit Request">
+    </form>
+    
+    <a href="welcome.jsp">Go Back</a>
+</body>
+</html>

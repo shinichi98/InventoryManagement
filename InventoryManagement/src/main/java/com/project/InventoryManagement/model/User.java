@@ -22,22 +22,26 @@ public class User {
     private String lastName;
     
     private String email;
-    
+    @Column(name = "PhoneNumber")
     private String phoneNumber;
-    
+    @Column(name="equipmentIds")
     private String equipmentIds;
     
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-	
+    private int age;
+
+    // Constructors, getters, and setters
+    
+    
 
 	public User() {
 		
 	}
 
 	public User(Long userID, String username, String password, String firstName, String lastName, String email,
-			String phoneNumber,String equipmentIds, UserRole role) {
+			String phoneNumber,String equipmentIds, UserRole role,int age) {
 		super();
 		this.userID = userID;
 		this.username = username;
@@ -48,7 +52,15 @@ public class User {
 		this.phoneNumber = phoneNumber;
 		this.role = role;
 		this.equipmentIds=equipmentIds;
+		this.age=age;
 	}
+	public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
 
 	public Long getUserID() {
 		return userID;

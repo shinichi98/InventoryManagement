@@ -1,0 +1,5 @@
+package com.project.InventoryManagement.service;
+
+public class UserService {
+
+}

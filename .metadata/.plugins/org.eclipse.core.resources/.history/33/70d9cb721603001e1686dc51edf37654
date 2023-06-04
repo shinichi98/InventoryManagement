@@ -1,0 +1,14 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Equipment Details</title>
+</head>
+<body>
+    <h1>View Equipment Details</h1>
+    
+    <!-- Display equipment details or provide options to view details -->
+    
+    <a href="welcome.jsp">Go Back</a>
+</body>
+</html>

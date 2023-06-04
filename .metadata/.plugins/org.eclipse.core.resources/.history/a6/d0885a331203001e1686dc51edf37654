@@ -1,0 +1,31 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Equipment Held</title>
+</head>
+<body>
+    <h1>Equipment Held</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Equipment ID</th>
+                <th>Equipment Name</th>
+                <!-- Add more columns if needed -->
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="equipment" items="${equipmentList}">
+                <tr>
+                    <td>${equipment.id}</td>
+                    <td>${equipment.name}</td>
+                    <!-- Display other properties as needed -->
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+    
+    <a href="welcome.jsp">Go Back</a>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Change Password</title>
+</head>
+<body>
+    <h1>Change Password</h1>
+    
+    <form action="/frontend/updatepassword" method="POST">
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" name="newPassword" required><br>
+        
+        <input type="submit" value="Update Password">
+    </form>
+    
+    <a href="welcome">Go Back</a>
+</body>
+</html>

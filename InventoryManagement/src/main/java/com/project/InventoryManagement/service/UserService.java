@@ -21,12 +21,25 @@ public class UserService {
     }
 
     public User registerUser(User user) {
-        validateUniqueFields(user);
+//        validateUniqueFields(user);
+    	if (user.getEquipmentIds() == null) {
+            user.setEquipmentIds("");
+        }
         return userRepository.save(user);
+    }
+    public User loginUser(String username, String password) {
+        User user = userRepository.findByUsernameAndPassword(username, password);
+
+        if (user == null) {
+            throw new NoSuchElementException("Invalid username or password");
+        }
+
+        return user;
     }
 
     public User updateUser(User updatedUser) {
         User existingUser = getUserById(updatedUser.getUserID());
+//      validateUniqueFields(updatedUser);
         updateFields(existingUser, updatedUser);
         return userRepository.save(existingUser);
     }
@@ -87,6 +100,7 @@ public class UserService {
         if(newPassword.equals(storedPassword)) {
         	throw new IllegalArgumentException("Password are matching");
         }
+        existingUser.setPassword(newPassword);
         userRepository.save(existingUser);
     }
 
@@ -110,6 +124,7 @@ public class UserService {
         existingUser.setEmail(updatedUser.getEmail());
         existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
         existingUser.setRole(updatedUser.getRole());
+        existingUser.setAge(updatedUser.getAge());
     }
     
     

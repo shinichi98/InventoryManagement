@@ -1,0 +1,20 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Change Password</title>
+</head>
+<body>
+    <h1>Change Password</h1>
+    
+    <!-- Your change password form here -->
+    
+    <form action="updatepassword" method="POST">
+        <!-- Your form fields for updating password -->
+        
+        <input type="submit" value="Update Password">
+    </form>
+    
+    <a href="welcome.jsp">Go Back</a>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.project.InventoryManagement.model.User"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome</title>
+</head>
+<body>
+    <h1>Welcome, <%= ((User) session.getAttribute("user")).getUsername() %>!</h1>
+
+<h2>User Information:</h2>
+<p>Username: <%= ((User) session.getAttribute("user")).getUsername() %></p>
+<p>First Name: <%= ((User) session.getAttribute("user")).getFirstName() %></p>
+<p>Last Name: <%= ((User) session.getAttribute("user")).getLastName() %></p>
+<p>Email: <%= ((User) session.getAttribute("user")).getEmail() %></p>
+<p>Phone Number: <%= ((User) session.getAttribute("user")).getPhoneNumber() %></p>
+<p>Age: <%= ((User) session.getAttribute("user")).getAge() %></p>
+<p>Role: <%= ((User) session.getAttribute("user")).getRole() %></p>
+    <h2>Actions:</h2>
+    <ul>
+        <li><a href="changepassword">Change Password</a></li>
+        <li><a href="changeuserdetails">Change User Details</a></li>
+        <li><a href="requestEquipment">Raise Request for Equipment</a></li>
+        <li><a href="equipmentdetails">View Equipment Details</a></li>
+        <li><a href="equipmentheld">View Equipment Held by <%= ((User) session.getAttribute("user")).getUsername() %></a></li>
+    </ul>
+    
+    <form action="logout" method="POST">
+        <input type="submit" value="Logout">
+    </form>
+</body>
+</html>

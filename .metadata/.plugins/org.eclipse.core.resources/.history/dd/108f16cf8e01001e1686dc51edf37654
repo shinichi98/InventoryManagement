@@ -1,0 +1,169 @@
+package com.project.InventoryManagement.controller;
+
+import java.util.List;
+
+import org.springframework.http.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import com.project.InventoryManagement.model.User;
+import com.project.InventoryManagement.service.UserService;
+
+//@RestController
+//@RequestMapping("/users")
+//public class UserController {
+//
+//    private final UserService userService;
+//
+//    public UserController(UserService userService) {
+//        this.userService = userService;
+//    }
+//
+//    @PostMapping("/create")
+//    public ResponseEntity<User> createUser(@RequestBody User user) {
+//        User createdUser = userService.registerUser(user);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+//    }
+//
+//    @GetMapping("/getAll")
+//    public ResponseEntity<List<User>> getAllUsers() {
+//        List<User> users = userService.getAllUsers();
+//        return ResponseEntity.ok(users);
+//    }
+//
+//    @GetMapping("/{userId}")
+//    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
+//        User user = userService.getUserById(userId);
+//        return ResponseEntity.ok(user);
+//    }
+//
+//    @PutMapping("/{userId}")
+//    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
+//        updatedUser.setUserID(userId);
+//        User user = userService.updateUser(updatedUser);
+//        return ResponseEntity.ok(user);
+//    }
+//
+//    @DeleteMapping("/{userId}")
+//    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+//        userService.deleteUser(userId);
+//        return ResponseEntity.noContent().build();
+//    }
+//
+//    @PutMapping("/{userId}/changepassword")
+//    public ResponseEntity<Void> changePassword(@PathVariable Long userId, @RequestBody String newPassword) {
+//        userService.changePassword(userId, newPassword);
+//        return ResponseEntity.noContent().build();
+//    }
+//}
+@Controller
+@RequestMapping("/users")
+public class UserController {
+
+    private final UserService userService;
+    private final EquipmentService equipmentService;
+
+    public UserController(UserService userService, EquipmentService equipmentService) {
+        this.userService = userService;
+        this.equipmentService = equipmentService;
+    }
+
+    @PostMapping("/register")
+    public String registerUser(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) {
+        try {
+            User createdUser = userService.registerUser(user);
+            redirectAttributes.addFlashAttribute("message", "User registered successfully");
+            return "redirect:/users/login";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/users/register";
+        }
+    }
+
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "loginForm";
+    }
+
+    @PostMapping("/login")
+    public String loginUser(@RequestParam("username") String username, @RequestParam("password") String password, Model model, HttpSession session) {
+        try {
+            User user = userService.authenticateUser(username, password);
+            session.setAttribute("user", user);
+            return "redirect:/users/welcome";
+        } catch (Exception e) {
+            model.addAttribute("error", "Invalid username or password");
+            return "loginForm";
+        }
+    }
+
+    @GetMapping("/welcome")
+    public String showWelcomePage(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/users/login";
+        }
+        model.addAttribute("user", user);
+        return "welcome";
+    }
+
+    @PostMapping("/logout")
+    public String logoutUser(HttpSession session) {
+        session.invalidate();
+        return "redirect:/users/login";
+    }
+
+
+    @GetMapping("/welcome")
+    public String showWelcomePage(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/users/login";
+        }
+        model.addAttribute("user", user);
+        return "welcome";
+    }
+
+    @GetMapping("/equipment")
+    public String getAllEquipment(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/users/login";
+        }
+        List<Equipment> allEquipment = equipmentService.getAllEquipment();
+        model.addAttribute("equipmentList", allEquipment);
+        return "equipmentList";
+    }
+
+    @GetMapping("/requestequipment")
+    public String showRequestEquipmentForm(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/users/login";
+        }
+        return "requestEquipmentForm";
+    }
+
+    @PostMapping("/requestequipment")
+    public String requestEquipment(@RequestParam("equipmentId") String equipmentId, HttpSession session, RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/users/login";
+        }
+        try {
+            equipmentService.requestEquipment(equipmentId, user.getId());
+            redirectAttributes.addFlashAttribute("message", "Equipment request submitted successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to request equipment: " + e.getMessage());
+        }
+        return "redirect:/users/welcome";
+    }
+
+    // ... methods for changing user details, changing password, and getting all equipment held by the user ...
+
+    @PostMapping("/logout")
+    public String logoutUser(HttpSession session) {
+        session.invalidate();
+        return "redirect:/users/login";
+    }
+}

@@ -1,0 +1,76 @@
+package com.project.InventoryManagement.service;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.springframework.stereotype.Service;
+
+import com.project.InventoryManagement.model.User;
+import com.project.InventoryManagement.repository.UserRepository;
+
+@Service
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public User registerUser(User user) {
+        validateUniqueFields(user);
+        return userRepository.save(user);
+    }
+
+    public User updateUser(User updatedUser) {
+        User existingUser = getUserById(updatedUser.getUserID());
+        updateFields(existingUser, updatedUser);
+        return userRepository.save(existingUser);
+    }
+
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public void changePassword(Long userId, String newPassword) {
+        User existingUser = getUserById(userId);
+        String storedPassword = existingUser.getPassword();
+        if(newPassword.equals(storedPassword)) {
+        	throw new IllegalArgumentException("Password are matching");
+        }
+        userRepository.save(existingUser);
+    }
+
+    private void validateUniqueFields(User user) {
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+
+        if (userRepository.existsByPhoneNumber(user.getPhoneNumber())) {
+            throw new IllegalArgumentException("Phone number already exists");
+        }
+
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+    }
+
+    private void updateFields(User existingUser, User updatedUser) {
+        existingUser.setFirstName(updatedUser.getFirstName());
+        existingUser.setLastName(updatedUser.getLastName());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+        existingUser.setRole(updatedUser.getRole());
+    }
+    
+    
+}

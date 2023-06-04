@@ -1,0 +1,31 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome</title>
+</head>
+<body>
+    <h1>Welcome, <%= request.getSession().getAttribute("username") %>!</h1>
+    
+    <h2>User Information:</h2>
+    <p>Username: <%= request.getSession().getAttribute("username") %></p>
+    <p>First Name: <%= request.getSession().getAttribute("firstName") %></p>
+    <p>Last Name: <%= request.getSession().getAttribute("lastName") %></p>
+    <p>Email: <%= request.getSession().getAttribute("email") %></p>
+    <p>Phone Number: <%= request.getSession().getAttribute("phoneNumber") %></p>
+    <p>Age: <%= request.getSession().getAttribute("age") %></p>
+    <p>Role: <%= request.getSession().getAttribute("role") %></p>
+    
+    <h2>Actions:</h2>
+    <ul>
+        <li><a href="changepassword.jsp">Change Password</a></li>
+        <li><a href="changeuserdetails.jsp">Change User Details</a></li>
+        <li><a href="requestequipment.jsp">Raise Request for Equipment</a></li>
+        <li><a href="equipmentdetails.jsp">View Equipment Details</a></li>
+    </ul>
+    
+    <form action="logout" method="POST">
+        <input type="submit" value="Logout">
+    </form>
+</body>
+</html>
