@@ -74,17 +74,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void removeEquipmentFromUser(User user, Long equipmentId) {
-        String equipmentIds = user.getEquipmentIds();
-        if (equipmentIds != null && !equipmentIds.isEmpty()) {
-            List<String> equipmentIdList = new ArrayList<>(Arrays.asList(equipmentIds.split(",")));
-            equipmentIdList.remove(String.valueOf(equipmentId));
-            equipmentIds = String.join(",", equipmentIdList);
-            user.setEquipmentIds(equipmentIds);
-            userRepository.save(user);
-        }
-    }
-
     public List<Equipment> getEquipmentHeldByUser(User user) {
         List<Equipment> equipmentList = new ArrayList<>();
         String equipmentIds = user.getEquipmentIds();
@@ -119,7 +108,7 @@ public class UserService {
         }
     }
 
-    public void changePassword(Long userId, String newPassword) {
+    public User changePassword(Long userId, String newPassword) {
         User existingUser = getUserById(userId);
         String storedPassword = existingUser.getPassword();
         if(newPassword.equals(storedPassword)) {
@@ -127,8 +116,9 @@ public class UserService {
         }
         existingUser.setPassword(newPassword);
         userRepository.save(existingUser);
+        return existingUser;
     }
-
+    
     private void validateUniqueFields(User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new IllegalArgumentException("Username already exists");

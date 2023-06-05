@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.project.inventorymanagement.model.Equipment" %>
+<%@ page import="com.project.inventorymanagement.model.Request" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Equipment Details</title>
+    <title>Requests Raised</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 100px auto;
             padding: 20px;
             background-color: #fff;
@@ -28,14 +28,14 @@
         }
         
         table {
-            border-collapse: collapse;
             width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
         }
         
         th, td {
             text-align: left;
-            padding: 10px;
+            padding: 8px;
         }
         
         th {
@@ -51,27 +51,27 @@
 </head>
 <body>
     <div class="container">
-        <h1>Equipment Details</h1>
+        <h1>Requests Raised</h1>
         
         <table>
             <tr>
+                <th>Request ID</th>
+                <th>Request Date</th>
                 <th>Equipment ID</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Quantity</th>
+                <th>Equipment Category</th>
+                <th>Status</th>
             </tr>
             
             <% 
-            List<Equipment> equipmentList = (List<Equipment>) request.getAttribute("equipmentList");
-            for (Equipment equipment : equipmentList) { 
+            List<Request> requestList = (List<Request>) request.getAttribute("requestList");
+            for (Request req : requestList) { 
             %>
             <tr>
-                <td><%= equipment.getEquipmentID() %></td>
-                <td><%= equipment.getName() %></td>
-                <td><%= equipment.getCategory() %></td>
-                <td><%= equipment.getDescription() %></td>
-                <td><%= equipment.getQuantity() %></td>
+                <td><%= req.getRequestID() %></td>
+                <td><%= req.getRequestDate() %></td>
+                <td><%= req.getEquipment().getEquipmentID() %></td>
+                <td><%= req.getEquipment().getCategory() %></td>
+                <td><%= req.getStatus() %></td>
             </tr>
             <% } %>
         </table>

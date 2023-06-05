@@ -44,8 +44,6 @@ public class FrontendController {
         try {
             User user = userService.loginUser(username, password);
             session.setAttribute("user", (User) user);
-            System.out.println(user.getClass().getName() + " " + user.getUserID() +" "+user.getUsername());
-            System.out.println(session.getAttribute("user") != null);
             return "redirect:/frontend/welcome";
         } catch (NoSuchElementException e) {
             model.addAttribute("error", "Invalid username or password");
@@ -115,7 +113,7 @@ public class FrontendController {
 
         try {
             
-            Request request = requestService.raiseRequest(user.getUserID(), Long.parseLong(equipmentId));
+            requestService.raiseRequest(user.getUserID(), Long.parseLong(equipmentId));
             // Show success message
             model.addAttribute("successMessage", "Request raised successfully");
         } catch (IllegalArgumentException e) {
@@ -140,17 +138,18 @@ public class FrontendController {
     }
 
     @PostMapping("/updatepassword")
-    public String changePassword(@RequestParam String newPassword, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String changePassword(@RequestParam String newPassword, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/frontend/home";
         }
         try {
-            userService.changePassword( user.getUserID(), newPassword);
-            redirectAttributes.addFlashAttribute("message", "Password changed successfully");
+            user =userService.changePassword( user.getUserID(), newPassword);
+            model.addAttribute("message", "Password changed successfully");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to change password: " + e.getMessage());
+            model.addAttribute("error", "Failed to change password: " + e.getMessage());
         }
+        session.setAttribute("user", user);
         return "redirect:/frontend/welcome";
     }
 
@@ -244,6 +243,18 @@ public class FrontendController {
         }
         
         return "redirect:/frontend/returnequipment";
+    }
+    @GetMapping("/requestraised")
+    public String displayRequestsRaised(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/login";
+        }
+
+        List<Request> requestList = requestService.getRequestsRaisedByUser(user);
+        model.addAttribute("requestList", requestList);
+
+        return "requestraised";
     }
     
 }

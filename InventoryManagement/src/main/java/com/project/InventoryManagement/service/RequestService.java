@@ -74,5 +74,10 @@ public class RequestService {
         return requestRepository.findById(requestId)
                 .orElseThrow(() -> new NoSuchElementException("Request not found"));
     }
+    public List<Request> getRequestsRaisedByUser(User user) {
+    	Long userID = user.getUserID();
+        return requestRepository.findAllByUser_UserID(userID);
+    }
+
 }
 

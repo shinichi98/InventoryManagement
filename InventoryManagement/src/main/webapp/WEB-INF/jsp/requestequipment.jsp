@@ -3,6 +3,45 @@
 <html>
 <head>
     <title>Request Equipment</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        input[type="text"] {
+            width: 200px;
+            padding: 5px;
+        }
+        
+        input[type="submit"] {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        p {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
     <script>
         function showConfirmation() {
             alert("Request has been raised successfully!");
@@ -25,6 +64,7 @@
         <script>
             showConfirmation();
         </script>
+        <p style="color: green;">Success Message: <%= request.getAttribute("successMessage") %></p>
     <% } %>
 
     <%-- Display error messages if available --%>
@@ -32,7 +72,7 @@
         <script>
             showUnavailable();
         </script>
-        <p>Error Message: ${errorMessage}</p>
+        <p style="color: red;">Error Message: <%= request.getAttribute("errorMessage") %></p>
     <% } %>
     
     <%-- Display not found message if available --%>
@@ -40,7 +80,7 @@
         <script>
             showNotFound();
         </script>
-        <p>Please Try again with correct equipment ID: ${notFoundMessage}</p>
+        <p style="color: red;">Please try again with the correct equipment ID: <%= request.getAttribute("notFoundMessage") %></p>
     <% } %>
     
     <form action="requestequipment" method="POST">
