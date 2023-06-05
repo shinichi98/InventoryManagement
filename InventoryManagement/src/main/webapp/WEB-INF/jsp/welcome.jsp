@@ -19,12 +19,13 @@
     <ul>
         <li><a href="changepassword">Change Password</a></li>
         <li><a href="changeuserdetails">Change User Details</a></li>
-        <li><a href="requestEquipment">Raise Request for Equipment</a></li>
         <li><a href="equipmentdetails">View Equipment Details</a></li>
+        <li><a href="requestequipment">Raise Request for Equipment</a></li>
+        <li><a href="returnequipment">Return the Equipment</a></li>
         <li><a href="equipmentheld">View Equipment Held by <%= ((User) session.getAttribute("user")).getUsername() %></a></li>
     </ul>
     
-    <form action="logout" method="POST">
+    <form action="logout" method="GET">
         <input type="submit" value="Logout">
     </form>
 </body>

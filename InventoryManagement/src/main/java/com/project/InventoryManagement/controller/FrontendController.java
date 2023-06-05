@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -50,6 +51,14 @@ public class FrontendController {
             model.addAttribute("error", "Invalid username or password");
             return "login";
         }
+    }
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        // Invalidate the session and remove the user attribute
+        session.invalidate();
+        
+        // Redirect the user to the login page
+        return "redirect:/frontend/login";
     }
 
     @GetMapping("/register")
@@ -94,22 +103,32 @@ public class FrontendController {
         if (user == null) {
             return "redirect:/frontend/home";
         }
-        return "requestEquipmentForm";
+        return "requestequipment";
     }
 
     @PostMapping("/requestequipment")
-    public String requestEquipment(@RequestParam("equipmentId") String equipmentId, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String requestEquipment(@RequestParam("equipmentId") String equipmentId, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/frontend/home";
         }
+
         try {
-            requestService.raiseRequest(user.getUserID(), Long.parseLong(equipmentId));
-            redirectAttributes.addFlashAttribute("message", "Equipment request submitted successfully");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to request equipment: " + e.getMessage());
+            
+            Request request = requestService.raiseRequest(user.getUserID(), Long.parseLong(equipmentId));
+            // Show success message
+            model.addAttribute("successMessage", "Request raised successfully");
+        } catch (IllegalArgumentException e) {
+            // Show error message
+            model.addAttribute("errorMessage", "Equipment not available");
+        } catch (NoSuchElementException e) {
+            // Show error message
+            model.addAttribute("notFoundMessage", "Equipment not found");
         }
-        return "redirect:/frontend/welcome";
+
+        
+
+        return "requestequipment";
     }
     @GetMapping("/changepassword")
     public String showChangePasswordForm(HttpSession session) {
@@ -176,15 +195,20 @@ public class FrontendController {
     }
     
     @GetMapping("/equipmentheld")
-    public String displayEquipmentHeld(Model model, HttpSession session) {
+    public String displayEquipmentHeld(Model model, HttpSession session, HttpServletResponse response) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/frontend/login";
         }
-        
+
         List<Equipment> equipmentList = userService.getEquipmentHeldByUser(user);
         model.addAttribute("equipmentList", equipmentList);
-        
+
+        // Set cache control headers to disable caching
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
         return "equipmentheld";
     }
     @GetMapping("/equipmentdetails")
@@ -193,28 +217,33 @@ public class FrontendController {
         model.addAttribute("equipmentList", equipmentList);
         return "equipmentdetails";
     }
-    @GetMapping("/requestEquipment")
-    public String showRequestEquipmentPage() {
-        return "requestequipment";
-    }
-
-    @PostMapping("/requestEquipment")
-    public String requestEquipment(@RequestParam("equipmentId") Long equipmentId, HttpSession session, Model model) {
-    	Long userId = (Long) session.getAttribute("userId");
-
-        try {
-            Request request = requestService.raiseRequest(userId, equipmentId);
-            // Show success message
-            model.addAttribute("successMessage", "Request raised successfully");
-        } catch (IllegalArgumentException e) {
-            // Show error message
-            model.addAttribute("errorMessage", "Equipment not available");
-        } catch (NoSuchElementException e) {
-            // Show error message
-            model.addAttribute("errorMessage", "Equipment not found");
+    @GetMapping("/returnequipment")
+    public String displayEquipmentReturn(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/login";
         }
 
-        return "redirect:/welcome.jsp";
+        List<Equipment> equipmentList = userService.getEquipmentHeldByUser(user);
+        model.addAttribute("equipmentList", equipmentList);
+
+        return "returnequipment";
+    }
+    @PostMapping("/returnequipment")
+    public String returnEquipment(@RequestParam("equipmentId") String equipmentId, HttpSession session, RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/frontend/login";
+        }
+        
+        try {
+            userService.returnEquipment(user, Long.parseLong(equipmentId));
+            redirectAttributes.addFlashAttribute("successMessage", "Equipment returned successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to return equipment: " + e.getMessage());
+        }
+        
+        return "redirect:/frontend/returnequipment";
     }
     
 }

@@ -7,21 +7,24 @@ import org.springframework.stereotype.Service;
 
 import com.project.InventoryManagement.model.Equipment;
 import com.project.InventoryManagement.model.User;
+import com.project.InventoryManagement.repository.EquipmentRepository;
 import com.project.InventoryManagement.repository.UserRepository;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final EquipmentRepository equipmentRepository;
     private final EquipmentService equipmentService;
 
-    public UserService(UserRepository userRepository,EquipmentService equipmentService) {
+    public UserService(UserRepository userRepository,EquipmentService equipmentService,EquipmentRepository equipmentRepository) {
         this.userRepository = userRepository;
         this.equipmentService = equipmentService;
+        this.equipmentRepository=equipmentRepository;
     }
 
     public User registerUser(User user) {
-//        validateUniqueFields(user);
+        validateUniqueFields(user);
     	if (user.getEquipmentIds() == null) {
             user.setEquipmentIds("");
         }
@@ -63,6 +66,10 @@ public class UserService {
         } else {
             equipmentIds += "," + equipmentId;
         }
+        Equipment equipment=equipmentRepository.findById(equipmentId)
+                .orElseThrow(() -> new NoSuchElementException("Equipment not found"));
+        equipment.setQuantity(equipment.getQuantity()-1);
+       equipmentRepository.save(equipment);
         user.setEquipmentIds(equipmentIds);
         userRepository.save(user);
     }
@@ -92,6 +99,24 @@ public class UserService {
             }
         }
         return equipmentList;
+    }
+    public void returnEquipment(User user, Long equipmentId) {
+        String equipmentIds = user.getEquipmentIds();
+        if (equipmentIds != null && !equipmentIds.isEmpty()) {
+            String[] idsArray = equipmentIds.split(",");
+            List<String> idsList = new ArrayList<>(Arrays.asList(idsArray));
+            if (idsList.contains(String.valueOf(equipmentId))) {
+                idsList.remove(String.valueOf(equipmentId));
+                equipmentIds = String.join(",", idsList);
+                user.setEquipmentIds(equipmentIds);
+                userRepository.save(user);
+                
+                // Update the equipment quantity
+                Equipment equipment = equipmentRepository.findById(equipmentId).orElseThrow(() -> new NoSuchElementException("Equipment not found"));
+                equipment.setQuantity(equipment.getQuantity() + 1);
+                equipmentRepository.save(equipment);
+            }
+        }
     }
 
     public void changePassword(Long userId, String newPassword) {
@@ -123,7 +148,6 @@ public class UserService {
         existingUser.setLastName(updatedUser.getLastName());
         existingUser.setEmail(updatedUser.getEmail());
         existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-        existingUser.setRole(updatedUser.getRole());
         existingUser.setAge(updatedUser.getAge());
     }
     

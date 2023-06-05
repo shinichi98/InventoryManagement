@@ -4,10 +4,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Equipment Held</title>
+    <title>Return Equipment</title>
 </head>
 <body>
-    <h1>Equipment Held</h1>
+    <h1>Return Equipment</h1>
+    
+    <%-- Display success message if available --%>
+    <% String successMessage = (String) request.getAttribute("successMessage"); %>
+    <% if (successMessage != null) { %>
+        <p style="color: green;"><%= successMessage %></p>
+    <% } %>
+
+    <%-- Display error message if available --%>
+    <% String errorMessage = (String) request.getAttribute("errorMessage"); %>
+    <% if (errorMessage != null) { %>
+        <p style="color: red;"><%= errorMessage %></p>
+    <% } %>
+
+    <form action="returnequipment" method="POST">
+        <label for="equipmentId">Equipment ID:</label>
+        <input type="text" id="equipmentId" name="equipmentId">
+        <br>
+        <input type="submit" value="Return">
+    </form>
+
+    <h2>Equipment Held:</h2>
     <table>
         <thead>
             <tr>
@@ -31,6 +52,7 @@
             <% } %>
         </tbody>
     </table>
+    
     <a href="welcome">Go Back</a>
 </body>
 </html>

@@ -39,11 +39,6 @@ public class RequestService {
         request.setRequestDate(LocalDate.now());
         request.setStatus(RequestStatus.PENDING);
 
-        equipment.setQuantity(equipment.getQuantity() - 1);
-        equipmentService.updateEquipment(equipment);
-
-        userService.addEquipmentToUser(user, equipmentId);
-
         return requestRepository.save(request);
     }
 
